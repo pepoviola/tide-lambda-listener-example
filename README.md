@@ -50,3 +50,6 @@ SAM allow us to build each funcntion using a `makefile`, we are using this file 
 
 *This is an exploration and could be more efficient ways to conditional compile the code.*
 
+### Compile to AWS lambda
+
+You will need to target `x86_64-unknown-linux-musl`, you can check this [article](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/building-custom-runtimes.html) about custom runtimes.
