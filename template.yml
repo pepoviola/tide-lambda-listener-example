@@ -1,0 +1,53 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+
+Globals:
+    Function:
+        AutoPublishAlias: canary
+        MemorySize: 128
+        Timeout: 10
+        Environment:
+            Variables:
+                DATABASE_URL: "DB_URL"
+Resources:
+  GetHello:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      FunctionName: GetHello
+      Handler: bootstrap
+      Runtime: provided
+      CodeUri: .
+      Description: Test function
+      Policies:
+        - AWSLambdaBasicExecutionRole
+      Events:
+        HelloAPI:
+          Type: Api
+          Properties:
+            Path: /hello/{name}
+            Method: GET
+    Metadata:
+      BuildMethod: makefile
+  PostHello:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      FunctionName: PostHello
+      Handler: bootstrap
+      Runtime: provided
+      CodeUri: .
+      Description: Test function
+      Policies:
+        - AWSLambdaBasicExecutionRole
+      Events:
+        HelloAPI:
+          Type: Api
+          Properties:
+            Path: /hello
+            Method: POST
+    Metadata:
+      BuildMethod: makefile
+
+Outputs:
+  MyApi:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
