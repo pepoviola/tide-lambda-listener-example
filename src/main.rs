@@ -4,6 +4,7 @@ use tide_lambda_listener::LambdaListener;
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use sqlx::Pool;
+#[cfg(not(target_env = "musl"))]
 use tide::prelude::*;
 use tide::Server;
 
@@ -33,7 +34,6 @@ async fn main() -> tide::http::Result<()> {
     tide::log::start();
 
     let db_url = std::env::var("DATABASE_URL").unwrap();
-    let port = std::env::var("PORT").unwrap_or_else(|_| "8080".to_string());
 
     let db_pool = make_db_pool(&db_url).await;
     let mut app = server(db_pool).await;
@@ -48,6 +48,8 @@ async fn main() -> tide::http::Result<()> {
     {
         post_hello::register_route(app_ref);
         get_hello::register_route(app_ref);
+
+        let port = std::env::var("PORT").unwrap_or_else(|_| "8080".to_string());
         let mut listener = app
             .bind(format!("0.0.0.0:{}", port))
             .await
