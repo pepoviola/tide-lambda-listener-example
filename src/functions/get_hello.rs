@@ -1,12 +1,12 @@
-use tide::{Request, Response, Error};
 use sqlx::query_as;
+use tide::{Error, Request, Response};
 
 pub fn register_route(app: &mut tide::Server<crate::State>) {
     app.at("/hello/:name").get(handler);
 }
 
 pub async fn handler(req: Request<crate::State>) -> tide::Result {
-    let name =  req.param("name")?;
+    let name = req.param("name")?;
 
     let db_pool = req.state().db_pool.clone();
     let row = query_as!(
@@ -21,7 +21,7 @@ pub async fn handler(req: Request<crate::State>) -> tide::Result {
     .await
     .map_err(|e| Error::new(409, e))?;
 
-    let res =match row {
+    let res = match row {
         None => Response::new(404),
         Some(row) => {
             let mut r = Response::new(200);

@@ -7,7 +7,6 @@ use sqlx::Pool;
 use tide::prelude::*;
 use tide::Server;
 
-
 mod functions;
 #[cfg(not(target_env = "musl"))]
 use functions::get_hello;
@@ -19,13 +18,13 @@ include!(concat!(env!("OUT_DIR"), "/lambda.rs"));
 
 #[derive(Clone, Debug)]
 pub struct State {
-    db_pool: PgPool
+    db_pool: PgPool,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Greeting {
     name: String,
-    country_code: Option<String> // move to enum
+    country_code: Option<String>, // move to enum
 }
 
 #[async_std::main]
@@ -46,7 +45,7 @@ async fn main() -> tide::http::Result<()> {
         app.listen(LambdaListener::new()).await?;
     }
     #[cfg(not(target_env = "musl"))]
-        {
+    {
         post_hello::register_route(app_ref);
         get_hello::register_route(app_ref);
         let mut listener = app
@@ -62,7 +61,6 @@ async fn main() -> tide::http::Result<()> {
 
     Ok(())
 }
-
 
 // helpers
 async fn server(db_pool: PgPool) -> Server<State> {
